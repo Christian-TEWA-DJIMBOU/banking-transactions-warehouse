@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: banking-db
+    environment:
+      POSTGRES_DB: banking_dw
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+
+  pipeline:
+    build: .
+    container_name: banking-pipeline
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: banking_dw
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    volumes:
+      - ./data:/app/data
+      - ./sql:/app/sql
+      - ./scripts:/app/scripts
+
+volumes:
+  postgres_data:
