@@ -1,0 +1,8 @@
+data/
+__pycache__/
+*.pyc
+.env
+.vscode/
+.idea/
+postgres_data/
+*.egg-info/
